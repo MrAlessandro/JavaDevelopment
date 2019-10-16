@@ -23,30 +23,18 @@ public class Patient implements Runnable
             case RED:
                 try
                 {
-                    this.team.writing.lockInterruptibly();
+                    Equipe.writing.lockInterruptibly();
 
-                    for (int i = 0; i < this.team.team.length; i++)
-                        this.team.team[i].docLock.lockInterruptibly();
+                    for (int i = 0; i < Equipe.team.length; i++)
+                        Equipe.team[i].docLock.lockInterruptibly();
 
-                    Thread.currentThread().sleep(visitTime);
+                    Thread.sleep(visitTime);
 
-                    for (int i = 0; i < this.team.team.length; i++)
-                        this.team.team[i].docLock.unlock();
+                    for (int i = 0; i < Equipe.team.length; i++)
+                        Equipe.team[i].docLock.unlock();
 
-                    this.team.writing.unlock();
 
-                    this.team.writing.lockInterruptibly();
-                    this.team.redWaitersCounter--;
-                    this.team.writing.unlock();
-
-                    this.team.reading.lockInterruptibly();
-                    if (this.team.redWaitersCounter == 0)
-                    {
-                        this.team.reading.unlock();
-                        this.team.noRedWaiters.signalAll();
-                    }
-                    else
-                        this.team.reading.unlock();
+                    Equipe.writing.unlock();
                 }
                 catch ( InterruptedException e)
                 {
@@ -56,12 +44,13 @@ public class Patient implements Runnable
             case YELLOW:
                 try
                 {
-                    this.team.reading.lockInterruptibly();
-                    while (this.team.redWaitersCounter > 0)
-                        this.team.noRedWaiters.await();
-                    this.team.reading.unlock();
+                    Equipe.reading.lockInterruptibly();
 
                     int specIndex = ThreadLocalRandom.current().nextInt(0, this.team.team.length);
+
+                    
+
+                    Equipe.reading.unlock();
                 }
                 catch ( InterruptedException e)
                 {
