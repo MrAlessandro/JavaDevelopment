@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="70bd4590-98bb-474a-895a-f9c9442ff243" name="Default Changelist" comment="Progress">
-      <change afterPath="$PROJECT_DIR$/src/Names.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Equipe.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Equipe.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Patient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Patient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Ward.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/Ward.java" afterDir="false" />
-    </list>
+    <list default="true" id="70bd4590-98bb-474a-895a-f9c9442ff243" name="Default Changelist" comment="Progress" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -100,16 +93,5 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Progress" />
     <option name="LAST_COMMIT_MESSAGE" value="Progress" />
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/Ward.java</url>
-          <line>16</line>
-          <option name="timeStamp" value="6" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
 </project>
