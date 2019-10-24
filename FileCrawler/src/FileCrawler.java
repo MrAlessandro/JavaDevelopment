@@ -1,42 +1,29 @@
 import java.io.File;
+import java.util.concurrent.locks.Condition;
 
 public class FileCrawler
 {
-    public static void main(String[] args)
-    {
+    public static void main(String[] args) throws InterruptedException {
         if (args.length != 1)
         {
             System.err.println("Usage: java FileCrawler s [Directory's path]");
             System.exit(1);
         };
 
-        File dir = new File(args[0]);
+        Chain<String> chain = new Chain<String>();
+        Producer runProd = new Producer(chain, args[0]);
+        Consumer runCons = new Consumer(chain);
+        Thread[] consumer = new Thread[5];
+        Thread producer = new Thread(runProd);
+        for (int i = 0; i < consumer.length; i++)
+            consumer[i] = new Thread(runCons);
 
-        if (dir.isDirectory())
-        {
-            String[] files = dir.list();
+        producer.start();
+        for (int i = 0; i < consumer.length; i++)
+            consumer[i].start();
 
-            for (String file : files)
-            {
-                if (file != "." || file != "..")
-                {
-                    File actualfile = new File(file);
-
-                    if (actualfile.isDirectory())
-                    {
-
-                    }
-                    else
-                    {
-                        Printer.printInfo(actualfile);
-                    }
-                }
-            }
-        }
-        else
-        {
-            System.err.println("Argument must be a directory path");
-            System.exit(1);
-        }
+        producer.join();
+        for (int i = 0; i < consumer.length; i++)
+            consumer[i].join();
     }
 }

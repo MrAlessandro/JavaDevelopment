@@ -1,4 +1,5 @@
 import java.io.File;
+import java.util.Date;
 
 public class Consumer implements Runnable
 {
@@ -19,18 +20,20 @@ public class Consumer implements Runnable
 
         while (true)
         {
-            if (Thread.currentThread().isInterrupted() || (currentPath = chain.poll()) == null)
-            {
-                System.out.println("Consumer has been interrupted. No further directory to visit");
-                return;
-            }
+            currentPath = chain.poll();
+            if (currentPath == null)
+                if (chain.isNoMoreData())
+                    return;
+                else
+                    continue;
 
             currentDir = new File(currentPath);
             content = currentDir.list();
 
             for (String element : content)
             {
-                currentFile = new File(element);
+                String completePath = currentPath + "/" + element;
+                currentFile = new File(completePath);
                 if (currentFile.isFile())
                 {
                     System.out.println("    File: " + currentFile.getAbsolutePath());
@@ -41,7 +44,9 @@ public class Consumer implements Runnable
                         System.out.println("        Readable");
                     if(currentFile.canWrite())
                         System.out.println("        Writable");
-                    System.out.println("        Last modified: " + currentFile.lastModified());
+
+                    Date dt = new Date(currentFile.lastModified());
+                    System.out.println("        Last modified: " + dt);
                 }
             }
         }

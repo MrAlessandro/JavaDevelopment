@@ -22,13 +22,15 @@ public class Producer implements Runnable
 
         while (!toVisit.isEmpty())
         {
+
             String currentDirPat = toVisit.poll();
-            File current = new File(currentDirPat);
-            String[] content = current.list();
+            File currentDir = new File(currentDirPat);
+            String[] content = currentDir.list();
 
             for(String f : content)
             {
-                current = new File(f);
+                String completePath = currentDirPat + "/" + f;
+                File current = new File(completePath);
 
                 if (current.isDirectory())
                 {
@@ -37,5 +39,9 @@ public class Producer implements Runnable
                 }
             }
         }
+
+        chain.NoMoreData();
+
+        return;
     }
 }

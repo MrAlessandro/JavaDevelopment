@@ -6,22 +6,23 @@ public class Chain<E> extends LinkedList<E>
 {
     private ReentrantLock listLock;
     private Condition isNotEmpty;
+    private Boolean noMoreData;
 
     public Chain()
     {
         super();
         listLock = new ReentrantLock();
         isNotEmpty = listLock.newCondition();
+        noMoreData = false;
     }
 
     public boolean add(E element)
     {
         boolean test;
 
-        listLock.lock();
+        synchronized (this) {
             test = super.add(element);
-            isNotEmpty.signal();
-        listLock.unlock();
+        }
 
         return test;
     }
@@ -30,22 +31,28 @@ public class Chain<E> extends LinkedList<E>
     {
         E rvalue;
 
-        listLock.lock();
-            while (this.isEmpty())
-            {
-                try
-                {
-                    isNotEmpty.await();
-                }
-                catch (InterruptedException e)
-                {
-                    rvalue = null;
-                }
-            }
 
+        synchronized (this) {
             rvalue = super.poll();
-        listLock.unlock();
-
+        }
         return rvalue;
+    }
+
+    public boolean isNoMoreData()
+    {
+        boolean retValue;
+        synchronized (noMoreData)
+        {
+            retValue = noMoreData;
+        }
+        return retValue;
+    }
+
+    public void NoMoreData()
+    {
+        synchronized (noMoreData)
+        {
+            noMoreData = true;
+        }
     }
 }
