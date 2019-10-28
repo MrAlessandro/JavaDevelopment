@@ -41,16 +41,14 @@ public class ReaderWriter
             System.exit(1);
         }
 
-        try
+        try(FileInputStream inputStream = new FileInputStream(sourceFile);
+            FileOutputStream outputStream = new FileOutputStream(destFile))
         {
             int chunk = 100;
             int readByte;
             byte[] line = new byte[chunk];
             int off = 0;
             LinkedList<byte[]> linesList = new LinkedList<byte[]>();
-
-            FileInputStream inputStream = new FileInputStream(sourceFile);
-            FileOutputStream outputStream = new FileOutputStream(destFile);
 
             while ((readByte=inputStream.read()) != -1)
             {
