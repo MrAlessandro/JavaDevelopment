@@ -9,9 +9,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Account
 {
-    private UUID id;
-    private String owner;
-    private ArrayList<Movement> movements;
+    public UUID id;
+    public String owner;
+    public ArrayList<Movement> movements;
 
     public Account(String ownerName)
     {
