@@ -13,6 +13,11 @@ public class Account
     public String owner;
     public ArrayList<Movement> movements;
 
+    public Account()
+    {
+        super();
+    }
+
     public Account(String ownerName)
     {
         this.id = UUID.randomUUID();

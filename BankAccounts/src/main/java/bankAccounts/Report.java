@@ -1,11 +1,11 @@
 package bankAccounts;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.io.IOException;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
-import java.nio.CharBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.file.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -51,7 +51,7 @@ public class Report
 
     public static void generateAccounts()
     {
-        int numAccounts = ThreadLocalRandom.current().nextInt(10, 1000);
+        int numAccounts = 1;//ThreadLocalRandom.current().nextInt(10, 1000);
         int nameIndex;
 
         for (int i = 0; i < numAccounts; i++)
@@ -82,12 +82,12 @@ public class Report
 
             while (assIter.hasNext())
             {
-                selected = assIter.next();
-                compacted[index] = selected;
+                compacted[index] = assIter.next();
                 index++;
             }
 
             ObjectMapper toSave = new ObjectMapper();
+            toSave.enable(SerializationFeature.INDENT_OUTPUT);
             buffer = ByteBuffer.wrap(toSave.writeValueAsBytes(compacted));
 
             while(buffer.hasRemaining())
@@ -97,6 +97,16 @@ public class Report
 
             buffer.clear();
             outChannel.close();
+
+            // Reset values
+            Bonifico = 0;
+            Bollettino = 0;
+            F24 = 0;
+            PagoBancomat = 0;
+            Accredito = 0;
+
+            Associates.clear();
+
         }
         catch(IOException e)
         {
