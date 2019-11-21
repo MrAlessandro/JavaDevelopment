@@ -1,7 +1,7 @@
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -26,15 +26,15 @@ public class Server
             System.exit(1);
         }
 
-        ExecutorService pool = Executors.newFixedThreadPool(5);
+        ExecutorService pool = Executors.newFixedThreadPool(1);
         int port = 6789;
 
-        try(ServerSocketChannel connectionSocket = ServerSocketChannel.open();)
+        try(ServerSocket connectionSocket = new ServerSocket())
         {
             connectionSocket.bind(new InetSocketAddress("localhost", 6789));
             while(true)
             {
-                SocketChannel clientSocket = connectionSocket.accept();
+                Socket clientSocket = connectionSocket.accept();
                 Servant servant = new Servant(clientSocket, args[0]);
                 pool.execute(servant);
             }

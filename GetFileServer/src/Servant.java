@@ -1,19 +1,12 @@
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.channels.SocketChannel;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import org.omg.CORBA.ParameterModeHolder;
+import java.io.*;
+import java.net.Socket;
 
 public class Servant implements Runnable
 {
-    private SocketChannel client;
+    private Socket client;
     private String storagePath;
 
-    public Servant(SocketChannel client, String storagePath)
+    public Servant(Socket client, String storagePath)
     {
         this.client = client;
         this.storagePath = storagePath;
@@ -22,59 +15,47 @@ public class Servant implements Runnable
     @Override
     public void run()
     {
-        ByteBuffer buffer = ByteBuffer.allocate(2048);
-        StringBuilder strRequest = new StringBuilder();
-        Path requestedRoseource;
-        HTTTPrequest request;
-        int bytesRead = 0;
-        int bytesWritten = 0;
-
         try
         {
-            while ((bytesRead = client.read(buffer)) != -1)
+            DataOutputStream outToClient = new DataOutputStream(client.getOutputStream());
+            BufferedReader inFromClient = new BufferedReader(new InputStreamReader(client.getInputStream()));
+
+            String requestMessageLine = inFromClient.readLine();
+            if(requestMessageLine == null)
+                return;
+
+            String[] tokenized = requestMessageLine.split(" ");
+
+            if (tokenized[0].equals("GET"))
             {
-                strRequest.append(new String(buffer.array()));
-                buffer.clear();
-            }
+                File file = new File(storagePath.concat(tokenized[1]));
 
-            buffer.clear();
-            bytesRead = 0;
-            request = new HTTTPrequest(strRequest.toString());
-
-            if (request.getMethod().equals("GET"))
-            {
-                requestedRoseource = Paths.get(storagePath.concat(request.getURI()));
-
-                if (Files.exists(requestedRoseource))
+                if (file.exists())
                 {
-                    FileChannel inChannel = FileChannel.open(requestedRoseource);
-                    boolean stop = false;
+                    int fileLength = (int) file.length();
+                    FileInputStream inFile  = new FileInputStream(file);
+                    byte[] fileInBytes = new byte[fileLength];
+                    inFile.read(fileInBytes);
+                    outToClient.writeBytes("HTTP/1.0 200 Document Follows\r\n");
+                    outToClient.writeBytes("Content-Type: image/jpeg\r\n");
+                    outToClient.writeBytes("Content-Length: " + fileLength + "\r\n");
+                    outToClient.writeBytes("\r\n");
 
-                    buffer.put("HTTP/1.1 200 OK\r\n".getBytes());
-
-                    while(!stop)
-                    {
-                        bytesRead = inChannel.read(buffer);
-                        if(bytesRead == -1)
-                            stop = true;
-                        else
-                        {
-                            buffer.flip();
-                            while (buffer.hasRemaining())
-                            {
-                                client.write(buffer);
-                            }
-                            buffer.clear();
-                        }
-                    }
+                    outToClient.write(fileInBytes, 0, fileLength);
                 }
                 else
                 {
-                    buffer.put("HTTP/1.1 404 Not Found\r\n\r\n".getBytes());
+                    outToClient.writeBytes("HTTP/1.0 404 File not found\r\n\r\n");
                 }
             }
+            else
+            {
+                outToClient.writeBytes("HTTP/1.0 400 Bad request \n\r\n");
+            }
+
+            client.close();
         }
-        catch(HTTPFormatException | IOException e)
+        catch(IOException e)
         {
             e.printStackTrace();
         }
