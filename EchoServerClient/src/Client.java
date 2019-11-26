@@ -34,11 +34,21 @@ public class Client
                 while (buffer.hasRemaining())
                     server.write(buffer);
 
+
                 buffer.clear();
 
                 server.read(buffer);
 
-                System.out.println("Server echoed: " + new String(buffer.array()));
+                buffer.flip();
+
+                System.out.print("Server echoed: ");
+                while (buffer.hasRemaining())
+                {
+                    System.out.print((char) buffer.get());
+                }
+                System.out.print("\n");
+
+                buffer.clear();
             }
 
             server.close();

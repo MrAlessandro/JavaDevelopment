@@ -11,7 +11,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class Server
 {
     private static int DEFAULT_PORT = 8040;
-    private static int THREADS_NUM = 1;
+    private static int THREADS_NUM = 10;
 
     public static void main(String[] args)
     {
@@ -35,7 +35,7 @@ public class Server
 
             while(true)
             {
-                selector.select();
+                selector.select(100);
                 Set<SelectionKey> selectedKeys = selector.selectedKeys();
 
                 for (SelectionKey currentKey : selectedKeys)
@@ -59,6 +59,7 @@ public class Server
                         SocketChannel client = (SocketChannel) currentKey.channel();
                         ByteBuffer linkBuffer = (ByteBuffer) currentKey.attachment();
                         currentKey.interestOps(0);
+
 
                         Wrapper toInsert = new Wrapper(client, linkBuffer, currentKey);
 

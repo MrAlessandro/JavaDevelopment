@@ -37,7 +37,16 @@ public class Assistant extends Thread
                     if (bytesRead != -1)
                     {
                         registerable.put(taken.key);
-                        System.out.println("Server read: " + new String(buffer.array()));
+
+                        System.out.print("Server read: ");
+
+                        buffer.flip();
+
+                        while(buffer.hasRemaining())
+                        {
+                            System.out.print((char) buffer.get());
+                        }
+                        System.out.print("\n");
                     }
                     else
                         client.close();
