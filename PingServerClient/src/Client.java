@@ -55,6 +55,10 @@ public class Client
             recBuffer = new byte[BUFF_SIZE];
 
             int seqN = 0;
+            long RTTmin = Integer.MAX_VALUE;
+            long RTTmax = Integer.MIN_VALUE;
+            long RTTsum = 0;
+            int packetsLost = 0;
 
             while (seqN < 10)
             {
@@ -80,16 +84,32 @@ public class Client
                     else if(Integer.parseInt(splinted[1]) != seqN)
                         System.err.println("Received message out of sequence: " + messageReceived);
                     else
-                        System.out.println(messageReceived + " RTT: " + (System.currentTimeMillis() - Long.parseLong(splinted[2])) + " ms");
+                    {
+                        long tmp = System.currentTimeMillis() - Long.parseLong(splinted[2]);
+                        RTTsum += tmp;
 
+                        if (tmp < RTTmin)
+                            RTTmin = tmp;
+
+                        if (tmp > RTTmax)
+                            RTTmax = tmp;
+
+                        System.out.println(messageReceived + " RTT: " + tmp + " ms");
+                    }
                 }
                 catch (SocketTimeoutException e)
                 {
                     System.out.println("\t*");
+                    packetsLost++;
                 }
 
                 seqN++;
             }
+
+            System.out.printf("\n");
+            System.out.println("\t\t---- PING Statistics ----");
+            System.out.println("10 packets transmitted, " + (10 - packetsLost) + " packets received, " + ((packetsLost*100)/10) + "% packet loss");
+            System.out.printf("\tround-trip (ms) min/avg/max = %d/%.2f/%d\n", RTTmin, (double)(RTTsum/(10-packetsLost)), RTTmax);
         }
         catch (IOException e)
         {
